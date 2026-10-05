@@ -1245,7 +1245,7 @@ async function sendTicketNotificationEmail(ticket) {
     if (kamEmail && kamEmail.includes('@') && !toEmails.includes(kamEmail.trim())) toEmails.push(kamEmail.trim());
     if (!toEmails.length) toEmails.push('thanush@faceprep.in');
 
-    const ccEmails = ['arun.senthil@faceprep.in', 'thanush@faceprep.in', 'escalations@faceprepcampus.in'].filter(e => e && !toEmails.includes(e));
+    const ccEmails = ['arun.senthil@faceprep.in', 'thanush@faceprep.in'].filter(e => e && !toEmails.includes(e));
 
     const htmlContent = `
       <div style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
