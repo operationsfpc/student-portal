@@ -1345,8 +1345,8 @@ if(!subj || !desc) {
     const { error } = await sb.from('tickets').insert(ticket);
     if(error) throw error;
 
-    // Trigger Brevo email notification to Campus Manager / KAM
-    sendTicketNotificationEmail(ticket).catch(e => console.warn('Ticket notification notice:', e));
+    // Note: Ticket creation emails are disabled per SLA rules. 
+    // Unsolved ticket escalations are automatically evaluated and dispatched via SLA cron job.
 
     document.getElementById('f-subject').value = '';
     document.getElementById('f-desc').value = '';
