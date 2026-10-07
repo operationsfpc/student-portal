@@ -1231,7 +1231,7 @@ async function sendTicketNotificationEmail(ticket) {
     let cmEmail = null, kamEmail = null;
     if (college) {
       try {
-        const { data } = await sb.from('college_contacts').select('campus_manager_email, senior_manager_email').eq('college', college).maybeSingle();
+        const { data } = await sb.from('college_contacts').select('campus_manager_email, senior_manager_email').ilike('college', college.trim()).maybeSingle();
         if (data) {
           cmEmail = data.campus_manager_email;
           kamEmail = data.senior_manager_email;
