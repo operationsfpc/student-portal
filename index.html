@@ -1241,12 +1241,23 @@ async function sendTicketNotificationEmail(ticket) {
         console.warn('Could not query college contacts:', e);
       }
     }
-    const toEmails = [];
-    if (cmEmail && cmEmail.includes('@')) toEmails.push(cmEmail.trim());
-    if (kamEmail && kamEmail.includes('@') && !toEmails.includes(kamEmail.trim())) toEmails.push(kamEmail.trim());
-    if (!toEmails.length) toEmails.push('thanush@faceprep.in');
-
-    const ccEmails = ['arun.senthil@faceprep.in', 'thanush@faceprep.in'].filter(e => e && !toEmails.includes(e));
+    // Recipient rules: only this college's CM (or Incharge) and its own KAM, official
+    // @faceprep.in addresses only (never Gmail), with ashok@ and sainaveen@ always CC'd.
+    // A contact cell can hold several addresses ("a@x, b@y"). If the college, its KAM or
+    // its CM/Incharge has no official address, the email is not sent and is flagged.
+    const officialEmails = (val) => { const seen = new Set(); return String(val || '').split(',').map(e => e.trim().toLowerCase()).filter(e => /^[^\s@,;]+@faceprep\.in$/.test(e) && !seen.has(e) && seen.add(e)); };
+    const cmList = officialEmails(cmEmail);
+    const kamList = officialEmails(kamEmail);
+    const problems = [];
+    if (!college) problems.push('no college on the ticket');
+    if (!kamList.length) problems.push('no official KAM email');
+    if (!cmList.length) problems.push('no official CM / Incharge email');
+    if (problems.length) {
+      console.error(`📧 Ticket #${id} email NOT sent for ${college || 'unknown college'}: ${problems.join(', ')}. Please correct the college contacts.`);
+      return;
+    }
+    const toEmails = [...new Set([...cmList, ...kamList])];
+    const ccEmails = ['ashok@faceprep.in', 'sainaveen@faceprep.in'].filter(e => !toEmails.includes(e));
 
     const htmlContent = `
       <div style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
